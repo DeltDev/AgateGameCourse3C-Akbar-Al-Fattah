@@ -4,6 +4,7 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
     // Update is called once per frame
+    [HideInInspector] public Action<Vector2> OnMoveInput;
     void Update()
     {
         CheckMovementInput();
@@ -23,6 +24,10 @@ public class InputManager : MonoBehaviour
         float horizontalAxis = Input.GetAxis("Horizontal");
         Debug.Log("Vertical Axis: " + verticalAxis);
         Debug.Log("horizontal Axis: " + horizontalAxis);
+        Vector2 InputAxis = new Vector2(horizontalAxis,verticalAxis);
+        if(OnMoveInput != null){
+            OnMoveInput(InputAxis);
+        }
     }
 
     private void CheckSprintInput(){
