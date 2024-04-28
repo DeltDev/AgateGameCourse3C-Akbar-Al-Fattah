@@ -4171,8 +4171,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab2e8b6c2b84ebb4bb5370d47535af8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 700
+  RotationSmoothTime: 0.1
+  RotationSmoothVelocity: 0
+  walkSpeed: 350
+  sprintSpeed: 700
+  walkSprintTransition: 350
   input: {fileID: 1595039841}
+  speed: 0
 --- !u!54 &3443633268080785487
 Rigidbody:
   m_ObjectHideFlags: 0

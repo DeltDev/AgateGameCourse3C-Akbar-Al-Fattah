@@ -5,6 +5,7 @@ public class InputManager : MonoBehaviour
 {
     // Update is called once per frame
     [HideInInspector] public Action<Vector2> OnMoveInput;
+    [HideInInspector] public Action<bool> OnSprintInput;
     void Update()
     {
         CheckMovementInput();
@@ -34,9 +35,13 @@ public class InputManager : MonoBehaviour
         bool isHoldingSprintInput = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
         if(isHoldingSprintInput){
-            Debug.Log("Is Sprinting");
+            if(OnSprintInput != null){
+                OnSprintInput(true);
+            }
         } else {
-            Debug.Log("Not Sprinting");
+            if(OnSprintInput != null){
+                OnSprintInput(false);
+            }
         }
     }
 
