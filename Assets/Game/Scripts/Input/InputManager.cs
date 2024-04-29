@@ -6,6 +6,7 @@ public class InputManager : MonoBehaviour
     // Update is called once per frame
     [HideInInspector] public Action<Vector2> OnMoveInput;
     [HideInInspector] public Action<bool> OnSprintInput;
+    [HideInInspector] public Action OnJumpInput;
     void Update()
     {
         CheckMovementInput();
@@ -49,9 +50,9 @@ public class InputManager : MonoBehaviour
         bool isJumpingInput = Input.GetKey(KeyCode.Space);
 
         if(isJumpingInput){
-            Debug.Log("Jumping");
-        } else {
-            Debug.Log("Not Jumping");
+            if(OnJumpInput != null){
+                OnJumpInput();
+            }
         }
     }
 

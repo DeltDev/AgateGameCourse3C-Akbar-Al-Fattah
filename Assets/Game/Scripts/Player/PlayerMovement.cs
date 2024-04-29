@@ -12,6 +12,11 @@ public class PlayerMovement : MonoBehaviour
    [SerializeField] private InputManager input;
     private Rigidbody rb3d;
     [SerializeField] private float speed;
+    [SerializeField] private float jumpForce;
+    [SerializeField] private Transform GroundDetector;
+    [SerializeField] private float detectorRadius;
+    [SerializeField] private LayerMask groundLayer;
+    private bool isGrounded;
    private void Move(Vector2 axisDirection){
     if(axisDirection.magnitude >=0.1f){
         float rotAngle = Mathf.Atan2(axisDirection.x,axisDirection.y) * Mathf.Rad2Deg;
@@ -32,17 +37,35 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+
+    private void Jump(){
+        if(isGrounded){
+            Vector3 jumpDirection = Vector3.up;
+            rb3d.AddForce(jumpDirection * jumpForce * Time.deltaTime);
+        }
+        
+    }
+
+    private void CheckIsGrounded(){
+        isGrounded = Physics.CheckSphere(GroundDetector.position, detectorRadius, groundLayer);
+    }
    private void Start(){
     input.OnMoveInput += Move;
     input.OnSprintInput +=Sprint;
+    input.OnJumpInput += Jump;
    }
 
    private void OnDestroy(){
     input.OnMoveInput -= Move;
     input.OnSprintInput -=Sprint;
+    input.OnJumpInput -= Jump;
    }
    private void Awake(){
     speed = walkSpeed;
     rb3d = GetComponent<Rigidbody>();
+   }
+
+   private void Update(){
+    CheckIsGrounded();
    }
 }
