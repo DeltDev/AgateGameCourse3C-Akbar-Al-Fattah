@@ -8,6 +8,7 @@ public class InputManager : MonoBehaviour
     [HideInInspector] public Action<bool> OnSprintInput;
     [HideInInspector] public Action OnJumpInput;
     [HideInInspector] public Action OnClimbInput;
+    [HideInInspector] public Action OnCancelClimb;
     void Update()
     {
         CheckMovementInput();
@@ -101,10 +102,10 @@ public class InputManager : MonoBehaviour
         bool isCancelInput = Input.GetKey(KeyCode.C);
 
         if(isCancelInput){
-            Debug.Log("Cancel");
-        } else {
-            Debug.Log("Not Cancel");
-        }
+            if(OnCancelClimb != null){
+                OnCancelClimb();
+            }
+        } 
     }
 
     private void CheckPunchInput(){

@@ -78,7 +78,14 @@ public class PlayerMovement : MonoBehaviour
             rb3d.useGravity = false;
         }
     }
-    private void CheckIsGrounded(){
+    
+    private void CancelClimb(){
+        if(playerStance == PlayerStance.Climb){
+            playerStance = PlayerStance.Stand;
+            rb3d.useGravity = true;
+            transform.position -=transform.forward *1f;
+        }
+    }    private void CheckIsGrounded(){
         isGrounded = Physics.CheckSphere(GroundDetector.position, detectorRadius, groundLayer);
     }
    private void Start(){
@@ -86,6 +93,7 @@ public class PlayerMovement : MonoBehaviour
     input.OnSprintInput +=Sprint;
     input.OnJumpInput += Jump;
     input.OnClimbInput += Climb;
+    input.OnCancelClimb += CancelClimb;
    }
 
    private void OnDestroy(){
@@ -93,6 +101,7 @@ public class PlayerMovement : MonoBehaviour
     input.OnSprintInput -=Sprint;
     input.OnJumpInput -= Jump;
     input.OnClimbInput -= Climb;
+    input.OnCancelClimb -= CancelClimb;
    }
    private void Awake(){
     speed = walkSpeed;
