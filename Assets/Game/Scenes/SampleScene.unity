@@ -214,7 +214,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 75.42653
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -240,13 +240,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.20517352, y: -0, z: -0, w: 0.9787257}
-  m_LocalPosition: {x: 0, y: 2.14, z: -1.86}
+  m_LocalRotation: {x: 0.02710047, y: -0.9701503, z: 0.20337571, w: 0.12927607}
+  m_LocalPosition: {x: 11.21, y: 4.01, z: 19.59}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 23.679, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 23.679, y: -164.82, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3218,7 +3218,7 @@ Transform:
   m_GameObject: {fileID: 3443633268080785485}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 13.32, y: 0.85, z: 15.71}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4206,16 +4206,19 @@ MonoBehaviour:
   RotationSmoothTime: 0.1
   RotationSmoothVelocity: 0
   walkSpeed: 350
-  sprintSpeed: 700
-  walkSprintTransition: 350
+  sprintSpeed: 450
+  walkSprintTransition: 30
   input: {fileID: 1595039841}
   speed: 0
-  jumpForce: 5000
+  jumpForce: 1000
   GroundDetector: {fileID: 167577718}
   detectorRadius: 0.2
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  upperStepOffset: {x: 0, y: 0.3, z: 0.3}
+  stepCheckerDist: 0.1
+  stepForce: 40
 --- !u!54 &3443633268080785487
 Rigidbody:
   m_ObjectHideFlags: 0

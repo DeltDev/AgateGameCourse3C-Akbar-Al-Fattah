@@ -16,6 +16,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform GroundDetector;
     [SerializeField] private float detectorRadius;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private Vector3 upperStepOffset;
+    [SerializeField] private float stepCheckerDist;
+    [SerializeField] private float stepForce;
     private bool isGrounded;
    private void Move(Vector2 axisDirection){
     if(axisDirection.magnitude >=0.1f){
@@ -67,5 +70,15 @@ public class PlayerMovement : MonoBehaviour
 
    private void Update(){
     CheckIsGrounded();
+    checkStep();
+   }
+
+   private void checkStep(){
+    bool isHitLowerStep = Physics.Raycast(GroundDetector.position,transform.forward,stepCheckerDist);
+    bool isHitUpperStep = Physics.Raycast(GroundDetector.position + upperStepOffset,transform.forward,stepCheckerDist);
+
+    if(isHitLowerStep && !isHitUpperStep){
+        rb3d.AddForce(0,stepForce,0);
+    }
    }
 }
