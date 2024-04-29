@@ -7,6 +7,7 @@ public class InputManager : MonoBehaviour
     [HideInInspector] public Action<Vector2> OnMoveInput;
     [HideInInspector] public Action<bool> OnSprintInput;
     [HideInInspector] public Action OnJumpInput;
+    [HideInInspector] public Action OnClimbInput;
     void Update()
     {
         CheckMovementInput();
@@ -80,10 +81,10 @@ public class InputManager : MonoBehaviour
         bool isClimbInput = Input.GetKey(KeyCode.E);
 
         if(isClimbInput){
-            Debug.Log("Climb");
-        } else {
-            Debug.Log("Not Climb");
-        }
+            if(OnClimbInput != null){
+                OnClimbInput();
+            }
+        } 
     }
 
     private void CheckGlideInput(){
