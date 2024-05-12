@@ -6,10 +6,10 @@ public class PlayerMovement : MonoBehaviour
     
     [SerializeField] private float RotationSmoothTime = 0.1f;
     [SerializeField] private float RotationSmoothVelocity;
-   [SerializeField] private float walkSpeed;
+    [SerializeField] private float walkSpeed;
     [SerializeField] private float sprintSpeed;
     [SerializeField] private float walkSprintTransition;
-   [SerializeField] private InputManager input;
+    [SerializeField] private InputManager input;
     private Rigidbody rb3d;
     [SerializeField] private float speed;
     [SerializeField] private float jumpForce;
@@ -26,36 +26,38 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask climbableLayer;
     [SerializeField] private Vector3 climbOffset;
     [SerializeField] private float climbSpeed;
+    [SerializeField] private Transform cameraTransform;
+    private Vector3 movementDirection = Vector3.zero;
    private void Move(Vector2 axisDirection){
-    Vector3 movementDirection = Vector3.zero;
+    
 
     bool isPlayerStanding = playerStance == PlayerStance.Stand;
     bool isPlayerClimbing = playerStance == PlayerStance.Climb;
     if(isPlayerStanding){
         if(axisDirection.magnitude >=0.1f){
-            float rotAngle = Mathf.Atan2(axisDirection.x,axisDirection.y) * Mathf.Rad2Deg;
+            float rotAngle = Mathf.Atan2(axisDirection.x,axisDirection.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
             float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, rotAngle, ref RotationSmoothVelocity, RotationSmoothTime);
             transform.rotation = Quaternion.Euler(0f,smoothAngle,0f);
             movementDirection = Quaternion.Euler(0f,rotAngle,0f) * Vector3.forward;
-            rb3d.AddForce(movementDirection * Time.deltaTime * speed);
+            rb3d.AddForce(speed * Time.deltaTime * movementDirection);
         }
     } else if(isPlayerClimbing){
         Vector3 horizontal = axisDirection.x * transform.right;
         Vector3 vertical = axisDirection.y * transform.up;
 
         movementDirection = horizontal + vertical;
-        rb3d.AddForce(movementDirection * Time.deltaTime * climbSpeed);
+        rb3d.AddForce(climbSpeed * Time.deltaTime * movementDirection);
     }
     
    }
     private void Sprint(bool isSprint){
         if(isSprint){
             if(speed < sprintSpeed){
-                speed = speed + walkSprintTransition * Time.deltaTime;
+                speed += walkSprintTransition * Time.deltaTime;
             }
         } else {
             if(speed > walkSpeed){
-                speed = speed - walkSprintTransition * Time.deltaTime;
+                speed -= walkSprintTransition * Time.deltaTime;
             }
         }
     }
@@ -63,7 +65,7 @@ public class PlayerMovement : MonoBehaviour
     private void Jump(){
         if(isGrounded){
             Vector3 jumpDirection = Vector3.up;
-            rb3d.AddForce(jumpDirection * jumpForce * Time.deltaTime);
+            rb3d.AddForce(jumpForce * Time.deltaTime * jumpDirection);
         }
         
     }
@@ -107,19 +109,24 @@ public class PlayerMovement : MonoBehaviour
     speed = walkSpeed;
     rb3d = GetComponent<Rigidbody>();
     playerStance = PlayerStance.Stand;
+    HideAndLockCursor();
    }
 
    private void Update(){
     CheckIsGrounded();
-    checkStep();
+    CheckStep();
    }
 
-   private void checkStep(){
+   private void CheckStep(){
     bool isHitLowerStep = Physics.Raycast(GroundDetector.position,transform.forward,stepCheckerDist);
     bool isHitUpperStep = Physics.Raycast(GroundDetector.position + upperStepOffset,transform.forward,stepCheckerDist);
 
     if(isHitLowerStep && !isHitUpperStep){
         rb3d.AddForce(0,stepForce,0);
     }
+   }
+   private void HideAndLockCursor(){
+    Cursor.lockState = CursorLockMode.Locked;
+    Cursor.visible = false;
    }
 }
