@@ -27,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Vector3 climbOffset;
     [SerializeField] private float climbSpeed;
     [SerializeField] private Transform cameraTransform;
+    [SerializeField] private CameraManager cameraManager;
     private Vector3 movementDirection = Vector3.zero;
    private void Move(Vector2 axisDirection){
     
@@ -34,13 +35,27 @@ public class PlayerMovement : MonoBehaviour
     bool isPlayerStanding = playerStance == PlayerStance.Stand;
     bool isPlayerClimbing = playerStance == PlayerStance.Climb;
     if(isPlayerStanding){
-        if(axisDirection.magnitude >=0.1f){
-            float rotAngle = Mathf.Atan2(axisDirection.x,axisDirection.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
-            float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, rotAngle, ref RotationSmoothVelocity, RotationSmoothTime);
-            transform.rotation = Quaternion.Euler(0f,smoothAngle,0f);
-            movementDirection = Quaternion.Euler(0f,rotAngle,0f) * Vector3.forward;
-            rb3d.AddForce(speed * Time.deltaTime * movementDirection);
+        switch(cameraManager.CameraState){
+            case CameraState.ThirdPerson:        
+                if(axisDirection.magnitude >=0.1f){
+                    float rotAngle = Mathf.Atan2(axisDirection.x,axisDirection.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
+                    float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, rotAngle, ref RotationSmoothVelocity, RotationSmoothTime);
+                    transform.rotation = Quaternion.Euler(0f,smoothAngle,0f);
+                    movementDirection = Quaternion.Euler(0f,rotAngle,0f) * Vector3.forward;
+                    rb3d.AddForce(speed * Time.deltaTime * movementDirection);
+                }
+                break;
+            case CameraState.FirstPerson:
+                transform.rotation = Quaternion.Euler(0f,cameraTransform.eulerAngles.y,0f);
+                Vector3 verticalDir = axisDirection.y*transform.forward;
+                Vector3 horizontalDir = axisDirection.x*transform.right;
+                movementDirection = verticalDir + horizontalDir;
+                rb3d.AddForce(speed * Time.deltaTime * movementDirection);
+                break;
+            default:
+                break;
         }
+
     } else if(isPlayerClimbing){
         Vector3 horizontal = axisDirection.x * transform.right;
         Vector3 vertical = axisDirection.y * transform.up;
@@ -78,6 +93,7 @@ public class PlayerMovement : MonoBehaviour
             transform.position = hit.point - offset;
             playerStance = PlayerStance.Climb;
             rb3d.useGravity = false;
+            cameraManager.SetFPSClampedCamera(true,transform.rotation.eulerAngles);
         }
     }
     
@@ -86,8 +102,10 @@ public class PlayerMovement : MonoBehaviour
             playerStance = PlayerStance.Stand;
             rb3d.useGravity = true;
             transform.position -=transform.forward *1f;
+            cameraManager.SetFPSClampedCamera(false,transform.rotation.eulerAngles);
         }
-    }    private void CheckIsGrounded(){
+    }    
+    private void CheckIsGrounded(){
         isGrounded = Physics.CheckSphere(GroundDetector.position, detectorRadius, groundLayer);
     }
    private void Start(){
