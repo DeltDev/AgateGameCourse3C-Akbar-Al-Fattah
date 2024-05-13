@@ -7,7 +7,14 @@ public class CameraManager : MonoBehaviour
 {
     public CameraState CameraState;
     [SerializeField] private CinemachineVirtualCamera fpsCamera;
-
+    [SerializeField] private CinemachineFreeLook tpsCamera;
+    [SerializeField] private InputManager inputManager;
+    private void Start(){
+        inputManager.OnChangePOV += SwitchCamera;
+    }
+    private void OnDestroy(){
+        inputManager.OnChangePOV -= SwitchCamera;
+    }
     public void SetFPSClampedCamera(bool isClamped, Vector3 playerRotation){
         CinemachinePOV pov = fpsCamera.GetCinemachineComponent<CinemachinePOV>();
 
@@ -20,5 +27,21 @@ public class CameraManager : MonoBehaviour
             pov.m_HorizontalAxis.m_MaxValue = 180;
             pov.m_HorizontalAxis.m_Wrap = true;
         }
+    }
+
+    private void SwitchCamera(){
+        if(CameraState == CameraState.ThirdPerson){
+            CameraState = CameraState.FirstPerson;
+            tpsCamera.gameObject.SetActive(false);
+            fpsCamera.gameObject.SetActive(true);
+        } else {
+            CameraState = CameraState.ThirdPerson;
+            tpsCamera.gameObject.SetActive(true);
+            fpsCamera.gameObject.SetActive(false);
+        }
+    }
+
+    public void SetTPSFOV(float FOV){
+        tpsCamera.m_Lens.FieldOfView = FOV;
     }
 }

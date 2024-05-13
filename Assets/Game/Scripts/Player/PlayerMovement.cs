@@ -94,6 +94,7 @@ public class PlayerMovement : MonoBehaviour
             playerStance = PlayerStance.Climb;
             rb3d.useGravity = false;
             cameraManager.SetFPSClampedCamera(true,transform.rotation.eulerAngles);
+            cameraManager.SetTPSFOV(70);
         }
     }
     
@@ -103,6 +104,7 @@ public class PlayerMovement : MonoBehaviour
             rb3d.useGravity = true;
             transform.position -=transform.forward *1f;
             cameraManager.SetFPSClampedCamera(false,transform.rotation.eulerAngles);
+            cameraManager.SetTPSFOV(40);
         }
     }    
     private void CheckIsGrounded(){
