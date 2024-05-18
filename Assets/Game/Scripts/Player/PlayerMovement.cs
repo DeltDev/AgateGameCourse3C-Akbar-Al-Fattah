@@ -28,13 +28,39 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float climbSpeed;
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private CameraManager cameraManager;
+    [SerializeField] private float crouchSpeed;
+    private CapsuleCollider collider;
+    private Animator animator;
     private Vector3 movementDirection = Vector3.zero;
+    private void ChangePerspective(){
+        animator.SetTrigger("ChangePerspective");
+    }
+    private void Crouch(){
+        if(playerStance == PlayerStance.Stand){
+            collider.height = 1.3f;
+            collider.center = Vector3.up *0.66f;
+            playerStance = PlayerStance.Crouch;
+            animator.SetBool("isCrouch",true);
+            speed = crouchSpeed;
+        } else if(playerStance == PlayerStance.Crouch){
+            collider.height = 1.8f;
+            collider.center = Vector3.up *0.9f;
+            playerStance = PlayerStance.Stand;
+            animator.SetBool("isCrouch",false);
+            speed = walkSpeed;
+        }
+    }
    private void Move(Vector2 axisDirection){
     
 
     bool isPlayerStanding = playerStance == PlayerStance.Stand;
     bool isPlayerClimbing = playerStance == PlayerStance.Climb;
-    if(isPlayerStanding){
+    bool isPlayerCrouching = playerStance == PlayerStance.Crouch;
+    if(isPlayerStanding || isPlayerCrouching){
+        Vector3 velocity = new Vector3(rb3d.velocity.x,0,rb3d.velocity.z);
+        animator.SetFloat("Velocity",velocity.magnitude * axisDirection.magnitude);
+        animator.SetFloat("VelocityX",velocity.magnitude * axisDirection.x);
+        animator.SetFloat("VelocityZ",velocity.magnitude * axisDirection.y);
         switch(cameraManager.CameraState){
             case CameraState.ThirdPerson:        
                 if(axisDirection.magnitude >=0.1f){
@@ -79,8 +105,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump(){
         if(isGrounded){
+            
             Vector3 jumpDirection = Vector3.up;
             rb3d.AddForce(jumpForce * Time.deltaTime * jumpDirection);
+            animator.SetTrigger("Jump");
         }
         
     }
@@ -109,6 +137,7 @@ public class PlayerMovement : MonoBehaviour
     }    
     private void CheckIsGrounded(){
         isGrounded = Physics.CheckSphere(GroundDetector.position, detectorRadius, groundLayer);
+        animator.SetBool("isGrounded",isGrounded);
     }
    private void Start(){
     input.OnMoveInput += Move;
@@ -116,6 +145,8 @@ public class PlayerMovement : MonoBehaviour
     input.OnJumpInput += Jump;
     input.OnClimbInput += Climb;
     input.OnCancelClimb += CancelClimb;
+    cameraManager.OnChangePerspective += ChangePerspective;
+    input.OnCrouchInput += Crouch;
    }
 
    private void OnDestroy(){
@@ -124,12 +155,16 @@ public class PlayerMovement : MonoBehaviour
     input.OnJumpInput -= Jump;
     input.OnClimbInput -= Climb;
     input.OnCancelClimb -= CancelClimb;
+    cameraManager.OnChangePerspective -= ChangePerspective;
+    input.OnCrouchInput -= Crouch;
    }
    private void Awake(){
     speed = walkSpeed;
     rb3d = GetComponent<Rigidbody>();
     playerStance = PlayerStance.Stand;
     HideAndLockCursor();
+    animator = GetComponent<Animator>();
+    collider = GetComponent<CapsuleCollider>();
    }
 
    private void Update(){

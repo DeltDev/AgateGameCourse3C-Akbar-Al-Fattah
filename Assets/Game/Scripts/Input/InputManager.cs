@@ -10,6 +10,7 @@ public class InputManager : MonoBehaviour
     [HideInInspector] public Action OnClimbInput;
     [HideInInspector] public Action OnCancelClimb;
     [HideInInspector] public Action OnChangePOV;
+    [HideInInspector] public Action OnCrouchInput;
     void Update()
     {
         CheckMovementInput();
@@ -23,7 +24,7 @@ public class InputManager : MonoBehaviour
         CheckPunchInput();
         CheckSprintInput();
     }
-
+    
     private void CheckMovementInput(){
         float verticalAxis = Input.GetAxis("Vertical");
         float horizontalAxis = Input.GetAxis("Horizontal");
@@ -63,10 +64,8 @@ public class InputManager : MonoBehaviour
         bool isCrouchingInput = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
 
         if(isCrouchingInput){
-            Debug.Log("Crouching");
-        } else {
-            Debug.Log("Not Crouching");
-        }
+            OnCrouchInput();
+        } 
     }
 
     private void CheckChangePOVInput(){
