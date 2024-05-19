@@ -14,6 +14,7 @@ public class InputManager : MonoBehaviour
     [HideInInspector] public Action OnGlideInput;
     [HideInInspector] public Action OnCancelGlide;
     [HideInInspector] public Action OnPunchInput;
+    [HideInInspector] public Action OnMainMenuInput;
     void Update()
     {
         CheckMovementInput();
@@ -126,9 +127,7 @@ public class InputManager : MonoBehaviour
         bool isMainMenuInput = Input.GetKey(KeyCode.Escape);
 
         if(isMainMenuInput){
-            Debug.Log("MainMenu");
-        } else {
-            Debug.Log("Not MainMenu");
-        }
+            OnMainMenuInput();
+        } 
     }
 }
